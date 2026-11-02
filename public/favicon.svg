@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .tile { fill: #16181d }
+    .curve { stroke: #f3f0e8 }
+    .dot { fill: #f2d64b }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #ece8df }
+      .curve { stroke: #0e1012 }
+      .dot { fill: #1f8f88 }
+    }
+  </style>
+  <rect class="tile" width="32" height="32" rx="8"/>
+  <path class="curve" d="M6 23.5C14 23.5 18 8.5 26 8.5" fill="none" stroke-width="2.75" stroke-linecap="round"/>
+  <circle class="dot" cx="16" cy="16" r="3"/>
+</svg>

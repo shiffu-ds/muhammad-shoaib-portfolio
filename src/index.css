@@ -1,0 +1,828 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces/opsz.css';
+@import '@fontsource-variable/ibm-plex-sans/wght.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+/*
+ * Design tokens. Each colour is light-dark(<light theme>, <dark theme>); which one
+ * applies follows the system setting, or the header toggle via [data-theme].
+ */
+@theme {
+  --color-*: initial;
+  --color-bg: light-dark(#f3f0e8, #0e1012);
+  --color-band: light-dark(#ece8de, #121418);
+  --color-surface: light-dark(#faf8f3, #15181c);
+  --color-ink: light-dark(#16181d, #ece8df);
+  --color-ink-2: light-dark(#444850, #bfc2c8);
+  --color-ink-3: light-dark(#5c6068, #959aa2);
+  --color-rule: light-dark(#d9d3c5, #2a2e35);
+  --color-rule-strong: light-dark(#a8a192, #4b505a);
+  --color-accent: light-dark(#0b6a65, #5cc3b4);
+  --color-accent-strong: light-dark(#07504c, #88d7cb);
+  --color-on-accent: light-dark(#f8f6f0, #0b0d0f);
+  --color-marker: light-dark(#efd55c, #5b5221);
+  --color-dot: light-dark(#f2d64b, #1f8f88);
+  /* viridis, shifted lighter for the dark theme */
+  --color-viz-1: light-dark(#482475, #31688e);
+  --color-viz-2: light-dark(#3e4a89, #26828e);
+  --color-viz-3: light-dark(#2d708e, #1f9e89);
+  --color-viz-4: light-dark(#20928c, #35b779);
+  --color-viz-5: light-dark(#28ae80, #6ece58);
+  --color-viz-6: light-dark(#5ec962, #b5de2b);
+
+  --font-display: 'Fraunces Variable', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: 'IBM Plex Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --ease-soft: cubic-bezier(0.22, 0.7, 0.2, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-rise: rise 0.9s var(--ease-expo) both;
+  --animate-fade: fade 1.4s ease-out both;
+  --animate-pop: pop 0.9s var(--ease-expo) both;
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+    /* shadow tints */
+    --shade-1: light-dark(rgb(22 24 29 / 0.05), rgb(0 0 0 / 0.4));
+    --shade-2: light-dark(rgb(22 24 29 / 0.18), rgb(0 0 0 / 0.6));
+    --shade-3: light-dark(rgb(22 24 29 / 0.28), rgb(0 0 0 / 0.75));
+  }
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-marker);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+
+@utility shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 78rem;
+  padding-inline: 1.25rem;
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 3rem;
+  }
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+/* An underline that draws in from the left on hover, over a faint resting line. */
+@utility link {
+  --line: max(1px, 0.05em);
+  background-image:
+    linear-gradient(var(--color-accent), var(--color-accent)),
+    linear-gradient(
+      color-mix(in oklab, currentColor 30%, transparent),
+      color-mix(in oklab, currentColor 30%, transparent)
+    );
+  background-repeat: no-repeat;
+  background-position:
+    0 100%,
+    0 100%;
+  background-size:
+    0% var(--line),
+    100% var(--line);
+  padding-bottom: 0.1em;
+  transition: background-size 0.6s var(--ease-expo);
+  &:hover,
+  .group:hover & {
+    background-size:
+      100% var(--line),
+      100% var(--line);
+  }
+}
+
+/* Resting and lifted elevations for plates and floating controls. */
+@utility elevate-1 {
+  box-shadow:
+    0 1px 2px var(--shade-1),
+    0 24px 48px -30px var(--shade-2);
+}
+@utility elevate-2 {
+  box-shadow:
+    0 2px 6px var(--shade-1),
+    0 40px 72px -32px var(--shade-3);
+}
+@utility elevate-accent {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 12px 28px -14px color-mix(in oklab, var(--color-accent) 75%, transparent);
+}
+
+@layer components {
+  /* "[Placeholder]" text waiting to be replaced in src/content.ts */
+  .placeholder {
+    color: var(--color-ink-3);
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.28em;
+  }
+
+  .marker {
+    background: linear-gradient(transparent 58%, var(--color-marker) 58% 92%, transparent 92%) no-repeat 0 0 / 100%
+      100%;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding-inline: 0.05em;
+  }
+
+  /* Words split out by <Words> so headings can animate in word by word; <Letters> splits further. */
+  .word,
+  .char {
+    display: inline-block;
+  }
+
+  /* A soft glow that follows the pointer around a [data-spotlight] container (see MotionLayer). */
+  .spotlight {
+    background: radial-gradient(
+      32rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      color-mix(in oklab, var(--color-accent) 13%, transparent),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.8s var(--ease-soft);
+  }
+  [data-spotting] > .spotlight {
+    opacity: 1;
+  }
+
+  /* The ring that trails a mouse pointer; grows over anything clickable. */
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: -1.125rem 0 0 -1.125rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in oklab, var(--color-accent) 70%, transparent);
+    pointer-events: none;
+    opacity: 0;
+    transition:
+      opacity 0.3s var(--ease-soft),
+      scale 0.5s var(--ease-expo),
+      background-color 0.3s var(--ease-soft),
+      border-color 0.3s var(--ease-soft);
+    &[data-visible] {
+      opacity: 1;
+    }
+    &[data-state='hover'] {
+      scale: 1.75;
+      border-color: transparent;
+      background-color: color-mix(in oklab, var(--color-accent) 16%, transparent);
+    }
+    &[data-state='hidden'] {
+      opacity: 0;
+      scale: 0.4;
+    }
+    &[data-pressed] {
+      scale: 0.8;
+    }
+    &[data-state='hover'][data-pressed] {
+      scale: 1.4;
+    }
+  }
+
+  /* Plates that tilt toward the pointer, with a glare that tracks it. */
+  [data-tilt] {
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(
+        28rem circle at var(--glare-x, 50%) var(--glare-y, 50%),
+        rgb(255 255 255 / 0.18),
+        transparent 45%
+      );
+      opacity: 0;
+      transition: opacity 0.6s var(--ease-soft);
+    }
+    &[data-tilting]::after {
+      opacity: 1;
+    }
+  }
+
+  /* Text outlined rather than filled, for decorative display type. */
+  .ticker-outline,
+  .case-number,
+  .wordmark .char {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--color-rule-strong);
+  }
+  .ticker-outline {
+    -webkit-text-stroke-color: var(--color-ink-3);
+  }
+  .case-number {
+    -webkit-text-stroke-color: var(--color-rule);
+  }
+
+  .ticker {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+  }
+
+  /* The footer's giant name: sized to the column, letters fill in under the pointer. */
+  .wordmark {
+    /* Fills the width for any name length (--chars is set from the name in Footer.tsx) */
+    font-size: calc(212cqi / var(--chars, 11));
+    /* A fixed optical size keeps letter widths proportional, so it never overflows on phones */
+    font-variation-settings: 'opsz' 144;
+    padding-top: 1.5rem;
+    padding-bottom: 0.04em;
+    & .char {
+      transition:
+        color 0.5s var(--ease-soft),
+        -webkit-text-stroke-color 0.5s var(--ease-soft);
+    }
+    & .char:hover {
+      color: var(--color-accent);
+      -webkit-text-stroke-color: var(--color-accent);
+    }
+  }
+  .wordmark-box {
+    container-type: inline-size;
+  }
+
+  /* A label stacked over an accent copy of itself; hovering the .roll link rolls it up. */
+  .roll-text {
+    display: inline-grid;
+    overflow: hidden;
+    & > * {
+      grid-area: 1 / 1;
+      transition: translate 0.55s var(--ease-expo);
+    }
+    & > :last-child {
+      translate: 0 105%;
+    }
+  }
+  @media (hover: hover) {
+    .roll:hover .roll-text > :first-child {
+      translate: 0 -105%;
+    }
+    .roll:hover .roll-text > :last-child {
+      translate: 0 0;
+    }
+  }
+
+  /* A sheen that sweeps across primary buttons on hover. */
+  .btn-shine {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.32) 50%, transparent 70%);
+      translate: -110% 0;
+      transition: translate 0.9s var(--ease-expo);
+    }
+    &:hover::before {
+      translate: 110% 0;
+    }
+  }
+
+  .chip {
+    transition:
+      border-color 0.3s var(--ease-soft),
+      color 0.3s var(--ease-soft);
+    &:hover {
+      border-color: var(--color-accent);
+      color: var(--color-ink);
+    }
+  }
+
+  .plate-hatch {
+    background-color: var(--color-surface);
+    background-image: repeating-linear-gradient(-45deg, var(--color-rule) 0 1px, transparent 1px 12px);
+  }
+
+  /* Graph-paper grid with a soft accent glow, faded out at the edges. */
+  .backdrop {
+    --glow-at: 74% 46%;
+    --fade-at: 68% 42%;
+    background-image:
+      radial-gradient(40% 50% at var(--glow-at), color-mix(in oklab, var(--color-accent) 16%, transparent), transparent 72%),
+      linear-gradient(to right, var(--color-rule) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-rule) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      3.5rem 3.5rem,
+      3.5rem 3.5rem;
+    -webkit-mask-image: radial-gradient(75% 80% at var(--fade-at), #000 25%, transparent 80%);
+    mask-image: radial-gradient(75% 80% at var(--fade-at), #000 25%, transparent 80%);
+  }
+
+  /* The contact panel always uses the dark palette (these mirror the dark tokens above). */
+  .panel-dark {
+    color-scheme: dark;
+    --color-bg: #111317;
+    --color-surface: #181b20;
+    --color-ink: #ece8df;
+    --color-ink-2: #bfc2c8;
+    --color-ink-3: #969aa2;
+    --color-rule: #2c3038;
+    --color-rule-strong: #4b505a;
+    --color-accent: #5cc3b4;
+    --color-accent-strong: #88d7cb;
+    --color-on-accent: #0b0d0f;
+    --color-marker: #5b5221;
+    --shade-1: rgb(0 0 0 / 0.4);
+    --shade-2: rgb(0 0 0 / 0.6);
+    --shade-3: rgb(0 0 0 / 0.75);
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  .status-dot {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-accent);
+    box-shadow: 0 0 0 0.25rem color-mix(in oklab, var(--color-accent) 18%, transparent);
+  }
+
+  /* Experience timeline: a rule down the content column with a dot per entry. */
+  .timeline {
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0.75rem;
+      bottom: 0.75rem;
+      left: 0;
+      width: 1px;
+      margin-left: -0.5px;
+      background-color: var(--color-rule-strong);
+      transform-origin: top;
+    }
+    @media (width >= 40rem) {
+      &::before {
+        left: 11rem;
+      }
+    }
+  }
+  .timeline-dot {
+    position: absolute;
+    top: 0.7rem;
+    left: 0;
+    width: 0.625rem;
+    height: 0.625rem;
+    margin-left: -0.3125rem;
+    border-radius: 9999px;
+    background-color: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--color-bg);
+  }
+
+  .scroll-progress {
+    display: none;
+  }
+
+  .menu-panel {
+    transition:
+      opacity 0.3s var(--ease-soft),
+      translate 0.3s var(--ease-soft);
+    @starting-style {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+    & li {
+      transition:
+        opacity 0.5s var(--ease-expo),
+        translate 0.5s var(--ease-expo);
+      transition-delay: calc(var(--i, 0) * 50ms + 60ms);
+      @starting-style {
+        opacity: 0;
+        translate: 0 1rem;
+      }
+    }
+  }
+}
+
+/* ---- Motion: only for visitors who haven't asked their system for less ---- */
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero: the name rises in letter by letter, then the highlighter sweeps.
+     Backwards fill only, so once in, the letters are free to react to hover. */
+  .hero-name .char {
+    animation: char-in 1.1s var(--ease-expo) backwards;
+    animation-delay: calc(var(--i, 0) * 45ms + 80ms);
+    transition:
+      translate 0.6s var(--ease-expo),
+      color 0.4s var(--ease-soft);
+  }
+  @media (hover: hover) {
+    .hero-name .char:hover {
+      translate: 0 -0.06em;
+      color: var(--color-accent);
+    }
+  }
+  .marker {
+    animation: marker 1s 1.1s var(--ease-expo) both;
+  }
+
+  .status-dot {
+    animation: pulse 2.4s var(--ease-soft) 0.8s 2;
+  }
+
+  /* Scroll reveals (see the observer in index.html) */
+  .js [data-reveal='up'] {
+    transition:
+      opacity 1s var(--ease-expo),
+      translate 1s var(--ease-expo);
+    transition-delay: calc(var(--delay, 0) * 1ms);
+  }
+  .js [data-reveal='up']:not([data-revealed]) {
+    opacity: 0;
+    translate: 0 2rem;
+  }
+
+  .js [data-reveal='stagger'] > * {
+    transition:
+      opacity 0.8s var(--ease-expo),
+      translate 0.8s var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * 80ms + var(--delay, 0) * 1ms);
+  }
+  .js [data-reveal='stagger']:not([data-revealed]) > * {
+    opacity: 0;
+    translate: 0 1.25rem;
+  }
+
+  .js [data-reveal='words'] .word {
+    transition:
+      opacity 1s var(--ease-expo),
+      translate 1s var(--ease-expo),
+      filter 1s var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+  .js [data-reveal='words']:not([data-revealed]) .word {
+    opacity: 0;
+    translate: 0 0.35em;
+    filter: blur(8px);
+  }
+  .js [data-reveal='words'] .marker {
+    animation: none;
+    transition: background-size 1s var(--ease-expo) 0.6s;
+  }
+  .js [data-reveal='words']:not([data-revealed]) .marker {
+    background-size: 0% 100%;
+  }
+
+  /* Photos wipe up into view while settling from a slight zoom */
+  .js [data-reveal='image'] {
+    clip-path: inset(0 0 0 0 round 0.75rem);
+    transition: clip-path 1.3s var(--ease-expo);
+    & img {
+      transition: scale 1.8s var(--ease-expo);
+    }
+  }
+  .js [data-reveal='image']:not([data-revealed]) {
+    clip-path: inset(100% 0 0 0 round 0.75rem);
+    & img {
+      scale: 1.12;
+    }
+  }
+
+  .js [data-reveal='line'] {
+    transition: scale 1.4s var(--ease-expo);
+  }
+  .js [data-reveal='line']:not([data-revealed]) {
+    scale: 0 1;
+  }
+
+  .js .timeline::before {
+    transition: scale 1.6s var(--ease-expo) 0.2s;
+  }
+  .js .timeline:not([data-revealed])::before {
+    scale: 1 0;
+  }
+  .js .timeline .timeline-dot {
+    transition: scale 0.6s var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * 140ms + 350ms);
+  }
+  .js .timeline:not([data-revealed]) .timeline-dot {
+    scale: 0;
+  }
+
+  /* Letters rise up out of a clipped line, one after another (the footer wordmark) */
+  .js [data-reveal='chars'] .char {
+    transition:
+      translate 1.1s var(--ease-expo),
+      color 0.5s var(--ease-soft),
+      -webkit-text-stroke-color 0.5s var(--ease-soft);
+    transition-delay: calc(var(--i, 0) * 40ms), 0s, 0s;
+  }
+  .js [data-reveal='chars']:not([data-revealed]) .char {
+    translate: 0 110%;
+  }
+
+  /* Pointer effects (set by MotionLayer for mouse users) */
+  @media (pointer: fine) {
+    [data-magnetic] {
+      transform: translate(var(--mag-x, 0px), var(--mag-y, 0px));
+    }
+    [data-tilt] {
+      transform: perspective(70rem) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    }
+  }
+
+  /* The field names drift past; hovering holds them still */
+  .ticker-track {
+    animation: ticker 48s linear infinite;
+  }
+  .ticker:hover .ticker-track {
+    animation-play-state: paused;
+  }
+
+  /* Scroll-driven touches, where the browser supports them (nothing changes elsewhere) */
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      animation: grow-x linear both;
+      animation-timeline: scroll(root);
+    }
+
+    /* The hero eases back and fades as you scroll into the work */
+    .hero-exit {
+      animation: hero-exit linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 85svh;
+    }
+
+    /* The About band opens out to full width as it arrives */
+    .band-reveal {
+      animation: band-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+
+    .contact-panel {
+      animation: panel-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+
+    .case-number {
+      animation: drift linear both;
+      animation-timeline: view();
+    }
+
+    /* An accent line fills the timeline rule as you read down it */
+    .timeline {
+      view-timeline: --timeline block;
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0.75rem;
+        bottom: 0.75rem;
+        left: 0;
+        width: 1px;
+        margin-left: -0.5px;
+        background-color: var(--color-accent);
+        transform-origin: top;
+        animation: grow-y linear both;
+        animation-timeline: --timeline;
+        animation-range: cover 15% cover 65%;
+        @media (width >= 40rem) {
+          left: 11rem;
+        }
+      }
+    }
+  }
+
+  /* Case study sections slide in one after another when expanded */
+  .case-step {
+    transition:
+      opacity 0.6s var(--ease-expo),
+      translate 0.6s var(--ease-expo);
+    transition-delay: calc(var(--i, 0) * 80ms + 150ms);
+  }
+  [data-open='false'] .case-step {
+    opacity: 0;
+    translate: 0 1rem;
+    transition-delay: 0s;
+  }
+
+  /* Hero figure */
+  .fig-curve {
+    stroke-dasharray: 1;
+    animation: fig-draw 1.6s 0.5s var(--ease-soft) both;
+  }
+  .fig-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fig-pop 0.5s calc(var(--i) * 15ms + 0.3s) var(--ease-expo) both;
+  }
+  .fig-band {
+    animation: fade 0.9s 1.2s ease-out both;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+@keyframes char-in {
+  from {
+    opacity: 0;
+    translate: 0 0.45em;
+    rotate: 8deg;
+    filter: blur(8px);
+  }
+}
+@keyframes ticker {
+  to {
+    translate: -50% 0;
+  }
+}
+@keyframes grow-x {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+@keyframes grow-y {
+  from {
+    scale: 1 0;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+@keyframes hero-exit {
+  to {
+    opacity: 0.35;
+    translate: 0 -3rem;
+    scale: 0.96;
+  }
+}
+@keyframes band-open {
+  from {
+    clip-path: inset(0 3% round 2rem);
+  }
+  to {
+    clip-path: inset(0 0 round 0);
+  }
+}
+@keyframes panel-in {
+  from {
+    opacity: 0.4;
+    scale: 0.93;
+  }
+}
+@keyframes drift {
+  from {
+    translate: 0 2.5rem;
+  }
+  to {
+    translate: 0 -2.5rem;
+  }
+}
+@keyframes marker {
+  from {
+    background-size: 0% 100%;
+  }
+}
+@keyframes pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-accent) 45%, transparent);
+  }
+  70%,
+  to {
+    box-shadow: 0 0 0 0.65rem transparent;
+  }
+}
+@keyframes fig-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes fig-pop {
+  from {
+    opacity: 0;
+    scale: 0.3;
+  }
+}
+
+/* Theme switch: the new theme grows out of the toggle (animated in useTheme). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* A safety net for anyone who asks their system for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Printing: show everything, whether or not it has scrolled into view yet. */
+@media print {
+  .js [data-reveal],
+  .js [data-reveal] > *,
+  .js [data-reveal] .word,
+  .js [data-reveal] .char,
+  .case-step {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    filter: none !important;
+    clip-path: none !important;
+  }
+}

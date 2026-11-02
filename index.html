@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Title, description, social-card and icon tags are generated from src/content.ts (see scripts/head.ts). -->
+    <!--app-head-->
+    <script>
+      // Apply a saved light/dark choice before the first paint, so the page never flashes.
+      try {
+        const theme = localStorage.getItem('theme')
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {}
+
+      // Scroll reveals: elements marked data-reveal start hidden (see src/index.css) and get
+      // data-revealed as they come into view. Without JavaScript nothing is ever hidden.
+      if ('IntersectionObserver' in window && 'MutationObserver' in window) {
+        document.documentElement.classList.add('js')
+        const reveal = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue
+              entry.target.setAttribute('data-revealed', '')
+              reveal.unobserve(entry.target)
+            }
+          },
+          { rootMargin: '0px 0px -10% 0px' },
+        )
+        const watch = (node) => {
+          if (node.nodeType !== 1) return
+          if (node.hasAttribute('data-reveal')) reveal.observe(node)
+          for (const el of node.querySelectorAll('[data-reveal]')) reveal.observe(el)
+        }
+        // Catches both the pre-rendered HTML as it parses and anything React adds later.
+        new MutationObserver((records) => {
+          for (const record of records) record.addedNodes.forEach(watch)
+        }).observe(document.documentElement, { childList: true, subtree: true })
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
